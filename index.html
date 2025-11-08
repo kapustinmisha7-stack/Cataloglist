@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Roblox Catalog Price List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --soft: #1f2937;
+      --muted: #6b7280;
+      --fg: #e5e7eb;
+      --accent: #60a5fa;
+      --accent-2: #34d399;
+      --danger: #f87171;
+      --warn: #f59e0b;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 20% -10%, #1e293b 0%, transparent 60%),
+                  linear-gradient(180deg, #0b1020 0%, #0a0f1d 60%, #070b14 100%), var(--bg);
+      color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    .container { max-width: 1100px; margin: 32px auto; padding: 0 16px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.07);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.02);
+      overflow: hidden;
+    }
+    .head {
+      padding: 18px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+    }
+    h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
+    .muted { color: var(--muted); }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .input, select {
+      background: #0b1220;
+      color: var(--fg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.15); }
+    .btn {
+      background: linear-gradient(180deg, #2563eb, #1e40af);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .05s ease, filter .15s ease, background .2s;
+      white-space: nowrap;
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn:active { transform: translateY(1px); }
+    .btn.secondary { background: linear-gradient(180deg, #374151, #111827); color: #e5e7eb; }
+    .btn.success { background: linear-gradient(180deg, #10b981, #065f46); }
+    .btn.warn { background: linear-gradient(180deg, #f59e0b, #b45309); }
+    .btn.danger { background: linear-gradient(180deg, #ef4444, #991b1b); }
+    .controls { padding: 14px 16px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+    th { font-weight: 600; color: #b7c0cf; background: rgba(255,255,255,0.02); position: sticky; top: 0; z-index: 1; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 8px; border-radius: 999px; font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .pill.roblox { background: rgba(96,165,250,0.08); color: #93c5fd; }
+    .pill.rolimons { background: rgba(52,211,153,0.08); color: #6ee7b7; }
+    .price { font-variant-numeric: tabular-nums; }
+    .right { text-align: right; }
+    .center { text-align: center; }
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); display: inline-block; }
+    .dot.ok { background: var(--accent-2); }
+    .dot.err { background: var(--danger); }
+    .totalbar { display:flex; align-items:center; justify-content: space-between; padding: 14px 16px; background: rgba(255,255,255,0.02); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .linkish { text-decoration: underline dotted; cursor: pointer; color: #cbd5e1; }
+    .qty-input {
+      width: 70px;
+      text-align: right;
+      background: #0b1220; color: var(--fg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 8px 10px;
+    }
+    .id-input {
+      width: 160px;
+      background: #0b1220; color: var(--fg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 8px 10px;
+    }
+    .grow { flex: 1 1 auto; }
+    .scroll { max-height: 60vh; overflow: auto; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    @media (max-width: 720px) {
+      .hide-sm { display: none; }
+      .qty-input { width: 56px; }
+      .id-input { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="head">
+        <div>
+          <h1>Catalog Price List</h1>
+          <div class="muted">Track Roblox clothing/accessories IDs, auto-fetch prices, see totals</div>
+        </div>
+        <div class="status">
+          <span class="dot" id="netDot"></span><span id="netStatus">Idle</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="newId" class="id-input" type="text" placeholder="Asset ID (e.g. 123456)" inputmode="numeric" />
+        <select id="newSource">
+          <option value="roblox">Roblox</option>
+          <option value="rolimons">Rolimons</option>
+        </select>
+        <input id="newQty" class="qty-input" type="number" min="1" step="1" value="1" />
+        <button class="btn" id="addBtn">Add item</button>
+        <span class="grow"></span>
+        <button class="btn secondary" id="importBtn">Import JSON</button>
+        <button class="btn secondary" id="exportBtn">Export JSON</button>
+        <button class="btn success" id="refreshBtn">Refresh prices</button>
+        <button class="btn danger" id="clearBtn">Clear all</button>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th class="hide-sm">Source</th>
+              <th>Name</th>
+              <th class="right">Unit price</th>
+              <th class="right">Qty</th>
+              <th class="right">Subtotal</th>
+              <th class="center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="totalbar">
+        <div class="muted">Currency: Robux</div>
+        <div>
+          <span class="muted">Items:</span> <span class="mono" id="countLbl">0</span>
+          <span style="display:inline-block; width:14px;"></span>
+          <span class="muted">Total:</span> <span class="mono" style="font-size:18px" id="totalLbl">0</span>
+        </div>
+      </div>
+
+      <div style="padding: 12px 16px;">
+        <div class="hint">
+          Tip: “Roblox” source uses the official Catalog item details endpoint via a proxy to avoid CORS; “Rolimons” uses community values for limiteds. You can mix sources per row, then Refresh to recompute totals.
+        </div>
+        <div class="hint">
+          Configure PROXY_URL at the top of this page’s script, and optionally run the provided Node proxy on localhost.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========= Configuration =========
+    // Point this at your deployed proxy origin (see server.js below).
+    // Example: 'http://localhost:8787'
+    const PROXY_URL = 'http://localhost:8787';
+
+    // If you cannot run a proxy, Rolimons lookups may still work directly,
+    // but Roblox catalog calls are likely blocked by CORS in browsers.
+
+    // ========= State & Storage =========
+    const storageKey = 'rbx_catalog_price_list_v1';
+    /** @type {{id:number, source:'roblox'|'rolimons', qty:number}[]} */
+    let items = [];
+    /** Map id -> { name, price, source, error? } */
+    let priceMap = new Map();
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        items = raw ? JSON.parse(raw) : [];
+      } catch {
+        items = [];
+      }
+    }
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(items));
+    }
+
+    // ========= Utilities =========
+    const fmt = (n) => new Intl.NumberFormat('en-US').format(Math.round(n || 0));
+    const byId = (id) => document.getElementById(id);
+    const netDot = byId('netDot');
+    const netStatus = byId('netStatus');
+    function setNet(status, ok=null) {
+      netStatus.textContent = status;
+      netDot.classList.remove('ok','err');
+      if (ok === true) netDot.classList.add('ok');
+      else if (ok === false) netDot.classList.add('err');
+    }
+
+    function upsertItem(assetId, source, qty) {
+      assetId = Number(assetId);
+      qty = Math.max(1, Number(qty || 1));
+      if (!Number.isFinite(assetId) || assetId <= 0) return;
+      items.push({ id: assetId, source, qty });
+      save();
+      render();
+    }
+
+    function removeAt(idx) {
+      items.splice(idx, 1);
+      save();
+      render();
+    }
+
+    function setQty(idx, qty) {
+      qty = Math.max(1, Number(qty || 1));
+      items[idx].qty = qty;
+      save();
+      renderTotalsOnly();
+    }
+
+    function setSource(idx, source) {
+      items[idx].source = source;
+      save();
+      render();
+    }
+
+    // ========= Fetchers =========
+    async function fetchRobloxDetailsBatch(idList) {
+      // Uses proxy -> Roblox Catalog v1/items/details
+      // Request body shape: { items: [{ itemType: 'Asset', id: 123 }, ...] }
+      const url = `${PROXY_URL}/roblox/catalog/items/details`;
+      const payload = { items: idList.map(id => ({ itemType: 'Asset', id })) };
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(`Roblox API ${res.status}`);
+      const data = await res.json();
+      // Normalize to map: id -> { name, price }
+      const out = new Map();
+      for (const d of (data?.data || data || [])) {
+        const name = d.name || `Asset ${d.id}`;
+        // Prefer "price" (regular), else "lowestPrice" (resale), else 0
+        const price = Number(
+          d.price ?? d.lowestPrice ?? d.lowestResalePrice ?? 0
+        );
+        out.set(Number(d.id), { name, price });
+      }
+      return out;
+    }
+
+    async function fetchRolimonsSubset(idList) {
+      // Either proxy filter endpoint or fetch full Rolimons dataset and filter client-side
+      // Prefer proxy route that already filters:
+      const tryProxy = async () => {
+        const url = `${PROXY_URL}/rolimons/itemdetails?ids=${idList.join(',')}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Rolimons proxy ${res.status}`);
+        return await res.json(); // { [id]: { name, rap, value, price } }
+      };
+
+      try {
+        const data = await tryProxy();
+        const out = new Map();
+        for (const id of Object.keys(data)) {
+          const row = data[id];
+          const name = row.name || `Item ${id}`;
+          // Choose "value" if present, else RAP, else 0
+          const price = Number(row.value ?? row.rap ?? row.price ?? 0);
+          out.set(Number(id), { name, price });
+        }
+        return out;
+      } catch (e) {
+        // Fallback: fetch the public Rolimons dataset and filter locally
+        // NOTE: This downloads a large JSON; proxy is recommended for production
+        const url = 'https://www.rolimons.com/itemapi/itemdetails';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Rolimons ${res.status}`);
+        const all = await res.json(); // { success, items: { id: [name, rap, value, demand, trend, ...] } }
+        const out = new Map();
+        for (const id of idList) {
+          const arr = all.items?.[id];
+          if (!arr) continue;
+          const [name, rap, value] = [arr[0], arr[1], arr[2]];
+          const price = Number(value ?? rap ?? 0);
+          out.set(Number(id), { name, price });
+        }
+        return out;
+      }
+    }
+
+    async function refreshPrices() {
+      if (!items.length) { priceMap.clear(); render(); return; }
+      setNet('Fetching...', null);
+
+      // Split IDs by source
+      const robloxIds = items.filter(x => x.source === 'roblox').map(x => x.id);
+      const roliIds   = items.filter(x => x.source === 'rolimons').map(x => x.id);
+
+      const newMap = new Map();
+
+      // Roblox: batch in chunks to keep payloads reasonable
+      try {
+        const chunk = (arr, n) => arr.reduce((a,c,i) => (i % n ? a[a.length-1].push(c) : a.push([c]), a), []);
+        const chunks = chunk(robloxIds, 50);
+        for (const ch of chunks) {
+          if (!ch.length) continue;
+          const m = await fetchRobloxDetailsBatch(ch);
+          for (const [id, v] of m.entries()) newMap.set(id, { ...v, source: 'roblox' });
+        }
+      } catch (e) {
+        console.warn('Roblox fetch failed', e);
+        for (const id of robloxIds) newMap.set(id, { name: `Asset ${id}`, price: 0, source: 'roblox', error: 'Fetch failed' });
+      }
+
+      // Rolimons
+      try {
+        if (roliIds.length) {
+          const m = await fetchRolimonsSubset(roliIds);
+          for (const [id, v] of m.entries()) newMap.set(id, { ...v, source: 'rolimons' });
+          // Mark any missing ids
+          for (const id of roliIds) if (!newMap.has(id)) newMap.set(id, { name: `Item ${id}`, price: 0, source: 'rolimons', error: 'Not found' });
+        }
+      } catch (e) {
+        console.warn('Rolimons fetch failed', e);
+        for (const id of roliIds) newMap.set(id, { name: `Item ${id}`, price: 0, source: 'rolimons', error: 'Fetch failed' });
+      }
+
+      priceMap = newMap;
+      setNet('Up to date', true);
+      render();
+    }
+
+    // ========= Rendering =========
+    function render() {
+      const tbody = byId('tbody');
+      tbody.innerHTML = '';
+      let total = 0;
+      items.forEach((row, idx) => {
+        const data = priceMap.get(row.id) || { name: `Asset ${row.id}`, price: 0, source: row.source };
+        const sub = (data.price || 0) * row.qty;
+        total += sub;
+
+        const tr = document.createElement('tr');
+
+        // Asset (ID)
+        const tdId = document.createElement('td');
+        tdId.innerHTML = `
+          <div class="mono">${row.id}</div>
+          ${data.error ? `<div class="hint" style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger')}">Error: ${data.error}</div>` : ''}
+        `;
+        tr.appendChild(tdId);
+
+        // Source
+        const tdSrc = document.createElement('td');
+        tdSrc.className = 'hide-sm';
+        tdSrc.innerHTML = `
+          <span class="pill ${row.source === 'roblox' ? 'roblox' : 'rolimons'}">
+            ${row.source === 'roblox' ? 'Roblox' : 'Rolimons'}
+          </span>
+        `;
+        tr.appendChild(tdSrc);
+
+        // Name
+        const tdName = document.createElement('td');
+        tdName.textContent = data.name || '';
+        tr.appendChild(tdName);
+
+        // Unit price
+        const tdPrice = document.createElement('td');
+        tdPrice.className = 'right price';
+        tdPrice.textContent = fmt(data.price || 0);
+        tr.appendChild(tdPrice);
+
+        // Qty (editable)
+        const tdQty = document.createElement('td');
+        tdQty.className = 'right';
+        const qtyInput = document.createElement('input');
+        qtyInput.className = 'qty-input';
+        qtyInput.type = 'number';
+        qtyInput.min = '1';
+        qtyInput.step = '1';
+        qtyInput.value = row.qty;
+        qtyInput.addEventListener('change', () => setQty(idx, qtyInput.value));
+        tdQty.appendChild(qtyInput);
+        tr.appendChild(tdQty);
+
+        // Subtotal
+        const tdSub = document.createElement('td');
+        tdSub.className = 'right price';
+        tdSub.textContent = fmt(sub);
+        tr.appendChild(tdSub);
+
+        // Actions
+        const tdAct = document.createElement('td');
+        tdAct.className = 'center';
+        const srcToggler = document.createElement('span');
+        srcToggler.className = 'linkish';
+        srcToggler.textContent = row.source === 'roblox' ? 'Use Rolimons' : 'Use Roblox';
+        srcToggler.addEventListener('click', () => { setSource(idx, row.source === 'roblox' ? 'rolimons' : 'roblox'); refreshPrices(); });
+        const sep = document.createElement('span'); sep.textContent = ' · ';
+        const delBtn = document.createElement('span');
+        delBtn.className = 'linkish';
+        delBtn.style.color = '#fda4af';
+        delBtn.textContent = 'Remove';
+        delBtn.addEventListener('click', () => removeAt(idx));
+        tdAct.append(srcToggler, sep, delBtn);
+        tr.appendChild(tdAct);
+
+        tbody.appendChild(tr);
+      });
+      byId('countLbl').textContent = String(items.length);
+      byId('totalLbl').textContent = fmt(total);
+    }
+
+    function renderTotalsOnly() {
+      let total = 0;
+      items.forEach((row, idx) => {
+        const data = priceMap.get(row.id) || { price: 0 };
+        total += (data.price || 0) * row.qty;
+        // update the qty cell and subtotal cell in place
+        const tbody = byId('tbody');
+        const tr = tbody.children[idx];
+        if (!tr) return;
+        const subCell = tr.children[5];
+        if (subCell) subCell.textContent = fmt((data.price || 0) * row.qty);
+      });
+      byId('totalLbl').textContent = fmt(total);
+    }
+
+    // ========= Event wiring =========
+    function bind() {
+      byId('addBtn').addEventListener('click', () => {
+        const id = byId('newId').value.trim();
+        const source = byId('newSource').value;
+        const qty = byId('newQty').value;
+        if (!id) return;
+        upsertItem(id, source, qty);
+        byId('newId').value = '';
+        refreshPrices();
+      });
+      byId('refreshBtn').addEventListener('click', () => refreshPrices());
+      byId('clearBtn').addEventListener('click', () => {
+        if (!confirm('Clear all items?')) return;
+        items = [];
+        save();
+        priceMap.clear();
+        render();
+      });
+      byId('exportBtn').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'items.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+      byId('importBtn').addEventListener('click', async () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const arr = JSON.parse(text);
+            // Basic validate
+            if (!Array.isArray(arr)) throw new Error('Invalid JSON');
+            items = arr
+              .map(x => ({ id: Number(x.id), source: (x.source === 'rolimons' ? 'rolimons' : 'roblox'), qty: Math.max(1, Number(x.qty || 1)) }))
+              .filter(x => Number.isFinite(x.id) && x.id > 0);
+            save();
+            render();
+            refreshPrices();
+          } catch (e) {
+            alert('Import failed: ' + e.message);
+          }
+        };
+        input.click();
+      });
+      // Enter to add
+      byId('newId').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') byId('addBtn').click();
+      });
+    }
+
+    // ========= Boot =========
+    (async function init() {
+      load();
+      bind();
+      render();
+      if (items.length) refreshPrices();
+    })();
+  </script>
+</body>
+</html>
